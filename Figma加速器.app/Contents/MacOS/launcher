@@ -1,0 +1,49 @@
+#!/bin/bash
+# ==============================================
+# Figma 启动器 - 一键优化网络 + 启动 Figma
+# 自包含版本，无需外部依赖
+# ==============================================
+
+# 获取脚本所在目录（app bundle 内的 MacOS 目录）
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+RES_DIR="$SCRIPT_DIR/../Resources"
+FIGMA_TOOL="$RES_DIR/FigmaNetOK/FigmaNetOK"
+
+echo ""
+echo "  ⚡ Figma 加速器"
+echo "  ──────────────────"
+echo ""
+
+# 1. 网络优化
+echo "  → 正在测试 Figma 最佳线路..."
+if [ -f "$FIGMA_TOOL" ]; then
+    osascript -e "
+    do shell script \"printf '\\\n' | '$FIGMA_TOOL'\" with administrator privileges
+    " 2>/dev/null
+    
+    if [ $? -eq 0 ]; then
+        echo "  ✓ 网络优化完成"
+    else
+        echo "  ⚠ 网络优化被跳过（需要管理员权限）"
+    fi
+else
+    echo "  ⚠ 未找到测速引擎，跳过网络优化"
+fi
+
+# 2. 启动 Figma
+echo "  → 正在启动 Figma..."
+open -a "Figma+EX" 2>/dev/null || open -a "Figma" 2>/dev/null || {
+    echo ""
+    echo "  ⚠ 未找到 Figma 应用。"
+    echo "  请确认已安装 Figma 客户端。"
+    echo "  下载地址: https://www.figma.com/downloads/"
+    echo ""
+    osascript -e 'display dialog "未找到 Figma 应用。\n\n请确认已安装 Figma 客户端后重试。" buttons {"确定"} default button 1 with icon caution' 2>/dev/null
+    exit 1
+}
+
+echo "  ✓ Figma 已启动"
+echo ""
+echo "  享受流畅的 Figma 体验！"
+echo ""
+sleep 2
